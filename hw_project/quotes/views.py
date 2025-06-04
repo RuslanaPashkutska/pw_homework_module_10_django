@@ -4,11 +4,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Quote, Author, Tag
 from .forms import QuoteForm, AuthorForm
 from django.db.models import Count
+from .utils import scrape_and_save_quotes
 
 
 def main(request, page=1):
     quotes = Quote.objects.all()
-    paginator = Paginator(quotes,10)
+    paginator = Paginator(quotes,5)
     page_number = page
     quotes_on_page = paginator.get_page(page_number)
 
@@ -27,7 +28,7 @@ def main(request, page=1):
 def tags_search(request, tag_name):
     tag = get_object_or_404(Tag, name=tag_name)
     quotes = Quote.objects.filter(tags=tag)
-    paginator = Paginator(quotes,10)
+    paginator = Paginator(quotes,5)
     page_number = request.GET.get("page", 1)
     quotes_on_page = paginator.get_page(page_number)
 
@@ -69,3 +70,10 @@ def add_quote(request):
     return render(request, "quotes/add_quote.html", {"form": form})
 
 
+
+@login_required
+def scrape_view(request):
+    if request.method == "POST":
+        scrape_and_save_quotes()
+        return redirect("quotes:list")
+    return render(request, "quotes/scrape.html")

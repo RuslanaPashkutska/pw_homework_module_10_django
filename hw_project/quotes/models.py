@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Author(models.Model):
@@ -10,7 +11,8 @@ class Author(models.Model):
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=30, null=False, unique=True)
+    name = models.CharField(max_length=100, null=False, unique=True)
+
 
 
 class Quote(models.Model):
@@ -18,4 +20,5 @@ class Quote(models.Model):
     tags = models.ManyToManyField(Tag)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
