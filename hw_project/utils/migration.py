@@ -1,6 +1,7 @@
 import os
 import django
-
+from dotenv import load_dotenv
+load_dotenv()
 from pymongo import MongoClient
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hw_project.settings")
@@ -8,8 +9,11 @@ django.setup()
 
 from quotes.models import Quote, Tag, Author  # noqa
 
-client = MongoClient("mongodb://admin:admin123@localhost:27017/?authSource=admin")
+mongo_uri = os.getenv("MONGODB_URI")
+if not mongo_uri:
+    raise ValueError("Missing MONGODB_URI in .env file")
 
+client = MongoClient(mongo_uri)
 db = client.hw
 
 authors = db.authors.find()
